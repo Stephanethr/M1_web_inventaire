@@ -1,0 +1,22 @@
+---
+interface Props {
+	href: string;
+}
+
+const { href} = Astro.props;
+---
+
+<button id="disconnect" class="btn btn-error">Se déconnecter</button>
+<div id="href" class="hidden">{href}</div>
+
+<script>
+  // Add event listener to button
+  document.getElementById("disconnect"
+  )?.addEventListener("click", () => {
+    // Remove token from local storage
+    localStorage.removeItem("token");
+    // Redirect to home page
+    window.location.href = document.getElementById("href")?.textContent || "/";
+  });
+
+</script>

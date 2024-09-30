@@ -1,0 +1,9 @@
+**/__pychache__
+**/.env
+**/venv
+**/.DS_Store
+**/.vscode
+**/node_modules
+**/.astro
+**/dist
+**/*.db
