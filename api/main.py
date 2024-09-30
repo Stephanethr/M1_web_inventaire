@@ -94,7 +94,7 @@ async def read_item():
 
 # --- Users
 # On ne peut pas changer le nom de la route, c'est une route prédéfinie par FastAPI
-@app.post("/token/", response_model=schemas.Token, tags=["Users"])
+@app.get("/token/", response_model=schemas.Token, tags=["Users"])
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(services.get_db)
@@ -119,7 +119,7 @@ async def read_users(
     """
     return await services.get_all_users(db)
 
-@app.post("/users/", response_model=schemas.User, tags=["Users"])
+@app.post("/user/", response_model=schemas.User, tags=["Users"])
 async def add_user(
     user: schemas.UserCreate,
     db: Session = Depends(services.get_db)
@@ -132,7 +132,7 @@ async def add_user(
     """
     return await services.add_user(db, user)
 
-@app.get("/users/me/", response_model=schemas.User, tags=["Users"])
+@app.get("/user/me/", response_model=schemas.User, tags=["Users"])
 async def read_users_me(
     current_user: Annotated[schemas.User, Depends(services.get_current_user)]
 ):
