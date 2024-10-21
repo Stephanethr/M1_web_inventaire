@@ -8,8 +8,6 @@
   if (!localStorage.getItem("token")) {
     window.location.href = "/login";
   }
-
-
   try {
     const response = await fetch(`${import.meta.env.PUBLIC_BASE_API_URL}/user/me`, {
       headers: {

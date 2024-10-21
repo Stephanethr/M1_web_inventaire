@@ -8,7 +8,7 @@ from jose import JWTError, jwt
 # passlib.context est utilisé pour le hashage des mots de passe
 from passlib.context import CryptContext
 # datetime est utilisé pour la gestion des dates
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 # os est utilisé pour la gestion des variables d'environnement
 import os
 # dotenv est utilisé pour charger les variables d'environnement
@@ -50,9 +50,17 @@ def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
     """
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = get_current_datetime() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = get_current_datetime() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+
+def get_current_datetime():
+    """
+    Cette fonction permet de récupérer la date et l'heure actuelle
+    @return datetime
+    """
+    return datetime.now(timezone.utc)

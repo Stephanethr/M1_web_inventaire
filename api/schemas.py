@@ -1,33 +1,75 @@
-
-# --- Importation des modules
-# pydantic est utilisé pour la validation des données
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import List, Optional
-from enum import Enum
+from tasks import get_current_datetime
 
-# --- Token schemas
+# --- Schémas pour Token
 class Token(BaseModel):
     access_token: str
     token_type: str
 
 class TokenData(BaseModel):
-    email: str = None
+    email: Optional[str] = None
 
-# --- User schemas
-class UserBase(BaseModel):
+# --- Schémas Utilisateur
+class UtilisateurBase(BaseModel):
     login: str
-    email : str
-    date_new : Optional[datetime] = datetime.now()
-    date_login: Optional[datetime] = datetime.now()
-    
-# UserCreate est utilisé pour la création d'un utilisateur, il contient un champ password + les champs de UserBase
-class UserCreate(UserBase):
+    email: str
+    date_creation: Optional[datetime] = Field(default_factory=get_current_datetime)
+    date_derniere_connexion: Optional[datetime] = Field(default_factory=get_current_datetime)
+
+class UtilisateurCreate(UtilisateurBase):
     password: str
 
-# User est utilisé pour la lecture d'un utilisateur, il contient un champ id + les champs de UserBase
-class User(UserBase):
+class Utilisateur(UtilisateurBase):
     id: int
+    comptes: Optional[List['Compte']] = []
+
     class Config:
         from_attributes = True
 
+# --- Schémas Compte
+class CompteBase(BaseModel):
+    nom: str
+
+class CompteCreate(CompteBase):
+    pass
+
+class Compte(CompteBase):
+    id: int
+    utilisateur_id: int
+    personnages: Optional[List['Personnage']] = []
+
+    class Config:
+        from_attributes = True
+
+# --- Schémas Personnage
+class PersonnageBase(BaseModel):
+    nom: str
+
+class PersonnageCreate(PersonnageBase):
+    pass
+
+class Personnage(PersonnageBase):
+    id: int
+    compte_id: int
+    inventaire: Optional['Inventaire'] = None
+
+    class Config:
+        from_attributes = True
+
+# --- Schémas Inventaire
+class InventaireBase(BaseModel):
+    objet : str
+    pass
+
+class InventaireCreate(InventaireBase):
+    pass
+
+class Inventaire(InventaireBase):
+    id: int
+    personnage_id: int
+
+
+    class Config:
+        from_attributes = True

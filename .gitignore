@@ -1,7 +1,7 @@
-**/__pychache__
-api/__pychache__
-api/.idea
+**/__pycache__
+**/.idea
 **/.env
+**/.venv
 **/venv
 **/.DS_Store
 **/.vscode
