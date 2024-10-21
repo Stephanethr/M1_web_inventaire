@@ -1,5 +1,6 @@
 # --- Importation des modules
 # sqlalchemy.orm est utilisé pour la session de la base de données, cela permet d'accéder à la base de données, de la lire et de l'écrire, etc.
+from datetime import timedelta
 from services.utils import get_db
 from sqlalchemy.orm import Session
 # fastapi.HTTPException est utilisé pour lever des exceptions HTTP
@@ -78,7 +79,7 @@ async def authenticate_user(db: Session, username: str, password: str):
     db.commit()
 
     
-    access_token = tasks.create_access_token(data={"sub": user.email})
+    access_token = tasks.create_access_token(data={"sub": user.email},expires_delta=timedelta(minutes=300))
     return {"access_token": access_token, "token_type": "bearer"}
 
 # route qui permet de récupérer l'utilisateur actuel
@@ -392,4 +393,3 @@ async def add_user_inventaire(db: Session, user_id: int, compte_id: int, personn
         status_code=status.HTTP_404_NOT_FOUND,
         detail="Personnage not found",
     )
-é

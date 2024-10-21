@@ -143,7 +143,7 @@ async def delete_user(
     """
     return await service_user.delete_user(db, user_id, current_user)
 
-@app.get("/user/", response_model=schemas.Utilisateur, tags=["Utilisateur"])
+@app.get("/user/me/", response_model=schemas.Utilisateur, tags=["Utilisateur"])
 async def read_users_me(
     current_user: Annotated[schemas.Utilisateur, Depends(service_user.get_current_user)]
 ):
