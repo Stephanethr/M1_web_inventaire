@@ -32,8 +32,6 @@ tags_metadata = [
         "name": "Auth",
         "description": "Operations with authentication.",
     },
-
-
 ]
 
 # --- FastAPI app
@@ -66,7 +64,6 @@ app.add_middleware(
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # --- Routes
-
 @app.get("/", tags=["Server"])
 async def read_item():
     return {
@@ -74,7 +71,7 @@ async def read_item():
     }
 
 
-@app.get("/unixTimes", tags=["Server"])
+@app.get("/unixTimes/", tags=["Server"])
 async def read_item():
     """
     Cette route permet de récupérer le temps UNIX
