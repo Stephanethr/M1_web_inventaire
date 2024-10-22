@@ -75,6 +75,7 @@
 </form>
 
 <script>
+  console.log(import.meta.env.PUBLIC_BASE_API_URL);
   import { wrapConfetti } from "../functions/wrapConfetti";
   document.querySelector("form")?.addEventListener("submit", async (e) => {
     e.preventDefault();

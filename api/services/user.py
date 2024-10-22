@@ -82,7 +82,6 @@ async def authenticate_user(db: Session, username: str, password: str):
     access_token = tasks.create_access_token(data={"sub": user.email},expires_delta=timedelta(minutes=300))
     return {"access_token": access_token, "token_type": "bearer"}
 
-# route qui permet de récupérer l'utilisateur actuel
 async def get_current_user(
     db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)
 ) -> models.Utilisateur:
@@ -110,7 +109,6 @@ async def get_current_user(
         raise credentials_exception
     return user
 
-# rouet qui permet de modifier les informations d'un utilisateur, seul le current_user peut modifier ses informations
 async def update_user(db: Session, user_id: int, user: schemas.UtilisateurCreate, current_user: models.Utilisateur) -> models.Utilisateur:
     """
     Cette fonction permet de modifier les informations d'un utilisateur
@@ -139,7 +137,6 @@ async def update_user(db: Session, user_id: int, user: schemas.UtilisateurCreate
         detail="Utilisateur not found",
     )
 
-# route qui permet de supprimer un utilisateur, seul le current_user peut supprimer son compte
 async def delete_user(db: Session, user_id: int, current_user: models.Utilisateur) -> models.Utilisateur:
     """
     Cette fonction permet de supprimer un utilisateur

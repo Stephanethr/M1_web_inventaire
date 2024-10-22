@@ -9,9 +9,16 @@ python3 -m venv .venv
 ```
 
 2. Activate the virtual environment
+   for unix :
 
 ```bash
 source .venv/bin/activate
+```
+
+for windows :
+
+```bash
+.venv\Scripts\activate
 ```
 
 3. Create folder `static` in the root of the project if it does not exist
@@ -37,7 +44,7 @@ pip install -r requirements.txt
 6. Run the application
 
 ```bash
-uvicorn main:app --host 0.0.0.0 --port 8090 --reload
+uvicorn main:app --reload
 ```
 
 6. Open the browser and go to http://127.0.0.1:8000/docs
