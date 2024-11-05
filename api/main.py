@@ -18,6 +18,7 @@ import schemas
 import services.utils as service_utils
 import services.user as service_user
 
+
 # --- Catégories des endpoints (voir documentations Swagger/redocs)
 tags_metadata = [
      {

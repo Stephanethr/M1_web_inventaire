@@ -1,38 +1,63 @@
 <section>
   <p>Mon email : <span class="font-bold" id="email"></span></p>
   <p>Mon identifiant de login : <span class="font-bold" id="login"></span></p>
+  <p>Mes comptes : <span class="font-bold" id="comptes"></span></p>
 </section>
 
 <script>
-  // if not token, redirect to login page
+  // Redirige vers la page de connexion si le token n'est pas présent
   if (!localStorage.getItem("token")) {
     window.location.href = "/login";
   }
-  try {
-    const response = await fetch(
-      `${import.meta.env.PUBLIC_BASE_API_URL}/user/me/`,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+
+  async function fetchUserData() {
+    try {
+      const response = await fetch(
+        `${import.meta.env.PUBLIC_BASE_API_URL}/user/me/`,
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
-    );
 
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
+      const data = await response.json();
+
+      const emailElement = document.getElementById("email");
+      const loginElement = document.getElementById("login");
+      const comptesElement = document.getElementById("comptes");
+
+      if (emailElement && loginElement && comptesElement) {
+        emailElement.textContent = data.email;
+        loginElement.textContent = data.login;
+
+        // Fetch and display user accounts
+        const comptesResponse = await fetch(
+          `${import.meta.env.PUBLIC_BASE_API_URL}/user/${data.id}/comptes`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        if (comptesResponse.ok) {
+          const comptes = await comptesResponse.json();
+          comptesElement.textContent = comptes
+            .map((compte: { nom: string }) => compte.nom) // Remplace `nom` par la propriété correcte de chaque compte
+            .join(", ");
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      // window.location.href = "/login";
     }
-
-    const data = await response.json();
-
-    const emailElement = document.getElementById("email");
-    const loginElement = document.getElementById("login");
-    if (emailElement && loginElement) {
-      emailElement.textContent = data.email;
-      loginElement.textContent = data.login;
-    }
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-    // window.location.href = "/login";
   }
+
+  fetchUserData();
 </script>

@@ -165,7 +165,7 @@ async def get_user_comptes(db: Session, user_id: int) -> list:
     """
     Cette fonction permet de récupérer les comptes d'un utilisateur
     @param db: Session
-    @param user_id: int
+    @param user_id: int 
     @return list
     """
     user = db.query(models.Utilisateur).filter(models.Utilisateur.id == user_id).first()
