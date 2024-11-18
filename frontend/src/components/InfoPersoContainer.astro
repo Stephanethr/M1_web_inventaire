@@ -1,38 +1,110 @@
 <section>
   <p>Mon email : <span class="font-bold" id="email"></span></p>
   <p>Mon identifiant de login : <span class="font-bold" id="login"></span></p>
+  <p>Mes comptes : <span class="font-bold" id="comptes"></span></p>
+  <p>Mes personnages : <span class="font-bold" id="personnage"></span></p>
+  <p>Mon inventaire : <span class="font-bold" id="inventaire"></span></p>
 </section>
 
 <script>
-  // if not token, redirect to login page
+  // Redirige vers la page de connexion si le token n'est pas présent
   if (!localStorage.getItem("token")) {
     window.location.href = "/login";
   }
-  try {
-    const response = await fetch(
-      `${import.meta.env.PUBLIC_BASE_API_URL}/user/me/`,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+
+  async function fetchUserData() {
+    try {
+      const response = await fetch(
+        `${import.meta.env.PUBLIC_BASE_API_URL}/user/me/`,
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
-    );
 
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
+      const data = await response.json();
+      console.log("User data:", data);
+
+      const emailElement = document.getElementById("email");
+      const loginElement = document.getElementById("login");
+      const comptesElement = document.getElementById("comptes");
+      const personnageElement = document.getElementById("personnage");
+      const inventaireElement = document.getElementById("inventaire");
+
+      if (emailElement && loginElement && comptesElement && personnageElement && inventaireElement) {
+        emailElement.textContent = data.email;
+        loginElement.textContent = data.login;
+
+        // Fetch and display user accounts
+        const comptesResponse = await fetch(
+          `${import.meta.env.PUBLIC_BASE_API_URL}/user/${data.id}/comptes`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        if (comptesResponse.ok) {
+          const comptes = await comptesResponse.json();
+          console.log("Comptes data:", comptes);
+          comptesElement.textContent = comptes
+            .map((compte: { nom: string }) => compte.nom) 
+            .join(", ");
+
+          // Fetch and display characters for each account
+          const personnagesPromises = comptes.map((compte: { id: string; nom: string }) =>
+            fetch(
+              `${import.meta.env.PUBLIC_BASE_API_URL}/user/${data.id}/compte/${compte.id}/personnages`,
+              {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+              }
+            ).then(response => response.json())
+          );
+
+          const personnages = await Promise.all(personnagesPromises);
+          console.log("Personnages data:", personnages);
+          personnageElement.textContent = personnages
+            .flat()
+            .map((personnage: { nom: string }) => personnage.nom)
+            .join(", ");
+
+          // Fetch and display inventory for each character
+          const inventairePromises = personnages.flat().map((personnage: { id: string; nom: string }) => {
+            const inventaireUrl = `${import.meta.env.PUBLIC_BASE_API_URL}/user/${data.id}/personnage/${personnage.id}/inventaire`;
+            console.log("Fetching inventaire for personnage:", personnage.id, "URL:", inventaireUrl);
+            return fetch(inventaireUrl, {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }).then(response => response.json());
+          });
+
+          const inventaire = await Promise.all(inventairePromises);
+          console.log("Inventaire data:", inventaire);
+          inventaireElement.textContent = inventaire
+            .flat()
+            .map((item: { nom: string }) => item.nom) 
+            .join(", ");
+        } else {
+          console.error("Failed to fetch comptes:", comptesResponse.statusText);
+        }
+      } else {
+        console.error("One or more elements not found in the DOM");
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      // window.location.href = "/login";
     }
-
-    const data = await response.json();
-
-    const emailElement = document.getElementById("email");
-    const loginElement = document.getElementById("login");
-    if (emailElement && loginElement) {
-      emailElement.textContent = data.email;
-      loginElement.textContent = data.login;
-    }
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-    // window.location.href = "/login";
   }
+
+  fetchUserData();
 </script>
