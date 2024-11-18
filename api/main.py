@@ -33,6 +33,10 @@ tags_metadata = [
         "name": "Auth",
         "description": "Operations with authentication.",
     },
+    {
+       "name": "Account",
+        "description": "Operations with accounts.",
+    },
 ]
 
 # --- FastAPI app
